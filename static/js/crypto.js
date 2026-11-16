@@ -36,8 +36,22 @@ document.addEventListener("DOMContentLoaded",()=>{
  });
  const decryptBtn=document.getElementById("decryptBtn");
  if(decryptBtn) decryptBtn.addEventListener("click",async()=>{
-  const m=window.SECUREVAULT_MESSAGE,pass=document.getElementById("passphrase").value,status=document.getElementById("verifyStatus"),out=document.getElementById("plainOutput");
-  try{
+  const dataElement = document.getElementById("securevault-message");
+const m = dataElement ? JSON.parse(dataElement.textContent) : null;
+
+const pass = document.getElementById("passphrase").value;
+const status = document.getElementById("verifyStatus");
+const out = document.getElementById("plainOutput");
+
+if (!m) {
+    throw new Error("Data pesan tidak ditemukan.");
+}
+
+if (!pass) {
+    status.textContent = "Masukkan passphrase terlebih dahulu.";
+    return;
+}
+   try{
    const key=await derive(pass,unhex(m.salt));const plain=dec.decode(await crypto.subtle.decrypt({name:"AES-GCM",iv:unhex(m.iv)},key,unhex(m.ciphertext)));
    const sig=JSON.parse(m.signature),valid=await verifyDemo(plain,sig);out.textContent=plain;
    status.textContent=valid?"Dekripsi berhasil. Tanda tangan demo cocok.":"Pesan terbuka, tetapi tanda tangan demo tidak valid.";
