@@ -1,1 +1,37 @@
-{% extends "base.html" %}{% block content %}<h1>{{message.subject}}</h1><section class="card"><p><b>Dari:</b> {{message.sender}} &nbsp; <b>Kepada:</b> {{message.recipient}}</p><p><b>Tanggal:</b> {{message.created_at}}</p><div class="encrypted"><b>Isi tersimpan sebagai ciphertext</b><p>{{message.ciphertext[:220]}}{% if message.ciphertext|length > 220 %}…{% endif %}</p></div><label>Passphrase pesan</label><input id="passphrase" type="password"><button id="decryptBtn" type="button">Dekripsi & verifikasi</button><p id="verifyStatus" class="hint"></p><pre id="plainOutput" class="plain"></pre></section><script>window.SECUREVAULT_MESSAGE={{ {'ciphertext':message.ciphertext,'salt':message.salt,'iv':message.iv,'signature':message.signature,'pubkey':message.pubkey}|tojson }};</script><script src="{{url_for('static',filename='js/crypto.js')}}"></script>{% endblock %}
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>{{ message.subject }}</h1><section class="card">
+    <p>
+        <b>Dari:</b> {{ message.sender }}
+        &nbsp;
+        <b>Kepada:</b> {{ message.recipient }}
+    </p><p><b>Tanggal:</b> {{ message.created_at }}</p>
+
+<div class="encrypted">
+    <b>Isi tersimpan sebagai ciphertext</b>
+    <p>
+        {{ message.ciphertext[:220] }}
+        {% if message.ciphertext|length > 220 %}…{% endif %}
+    </p>
+</div>
+
+<label>Passphrase pesan</label>
+<input id="passphrase" type="password" required>
+
+<button id="decryptBtn" type="button">
+    Dekripsi & verifikasi
+</button>
+
+<p id="verifyStatus" class="hint"></p>
+
+<pre id="plainOutput" class="plain"></pre>
+
+</section><script type="application/json" id="securevault-message">{{ {
+    'ciphertext': message.ciphertext,
+    'salt': message.salt,
+    'iv': message.iv,
+    'signature': message.signature,
+    'pubkey': message.pubkey
+}|tojson }}</script><script src="{{ url_for('static', filename='js/crypto.js') }}"></script>{% endblock %}
