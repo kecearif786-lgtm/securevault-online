@@ -18,15 +18,15 @@ app.config.update(
 
 def db():
     return pymysql.connect(
-        host=os.getenv("DB_HOST", "localhost"),
-        user=os.getenv("DB_USER", "root"),
-        password=os.getenv("DB_PASSWORD", ""),
-        database=os.getenv("DB_NAME", "securevault"),
+        host=os.getenv("DB_HOST", os.getenv("MYSQLHOST", "localhost")),
+        port=int(os.getenv("DB_PORT", os.getenv("MYSQLPORT", "3306"))),
+        user=os.getenv("DB_USER", os.getenv("MYSQLUSER", "root")),
+        password=os.getenv("DB_PASSWORD", os.getenv("MYSQLPASSWORD", "")),
+        database=os.getenv("DB_NAME", os.getenv("MYSQLDATABASE", "securevault")),
         charset="utf8mb4",
         cursorclass=DictCursor,
         autocommit=True,
     )
-
 def login_required(fn):
     @wraps(fn)
     def wrapper(*args, **kwargs):
