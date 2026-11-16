@@ -55,6 +55,9 @@ if (!pass) {
    const key=await derive(pass,unhex(m.salt));const plain=dec.decode(await crypto.subtle.decrypt({name:"AES-GCM",iv:unhex(m.iv)},key,unhex(m.ciphertext)));
    const sig=JSON.parse(m.signature),valid=await verifyDemo(plain,sig);out.textContent=plain;
    status.textContent=valid?"Dekripsi berhasil. Tanda tangan demo cocok.":"Pesan terbuka, tetapi tanda tangan demo tidak valid.";
-  }catch(e){out.textContent="";status.textContent="Dekripsi gagal. Periksa passphrase atau integritas data.";}
- });
+  }catch(e){
+    out.textContent = "";
+    status.textContent = "Error: " + e.name + " - " + e.message;
+    console.error("Detail dekripsi:", e);
+   }});
 });
