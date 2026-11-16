@@ -1,0 +1,26 @@
+CREATE DATABASE IF NOT EXISTS securevault CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE securevault;
+
+CREATE TABLE IF NOT EXISTS users (
+  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  username VARCHAR(30) NOT NULL UNIQUE,
+  password_hash VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS messages (
+  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  sender_id BIGINT UNSIGNED NOT NULL,
+  recipient_id BIGINT UNSIGNED NOT NULL,
+  subject VARCHAR(120) NOT NULL,
+  ciphertext LONGTEXT NOT NULL,
+  salt VARCHAR(128) NOT NULL,
+  iv VARCHAR(128) NOT NULL,
+  signature LONGTEXT NOT NULL,
+  pubkey LONGTEXT NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_msg_sender FOREIGN KEY (sender_id) REFERENCES users(id) ON DELETE CASCADE,
+  CONSTRAINT fk_msg_recipient FOREIGN KEY (recipient_id) REFERENCES users(id) ON DELETE CASCADE,
+  INDEX idx_inbox (recipient_id, created_at),
+  INDEX idx_sent (sender_id, created_at)
+);
